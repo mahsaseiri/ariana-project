@@ -1,25 +1,54 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { LoginSchema } from "../validations/auth";
 import { LoginFormValues } from "../types/auth";
 import Input from "../components/Input";
 import Button from "../components/Button";
 
 const Login = () => {
+  const navigate = useNavigate();
+
+  // Hardcoded credentials for testing
+  const TEST_USERNAME = "admin";
+  const TEST_PASSWORD = "password123";
+
   const initialValues: LoginFormValues = {
     username: "",
     password: "",
   };
 
-  const handleSubmit = (values: LoginFormValues, { setSubmitting }: any) => {
+  const handleSubmit = (
+    values: LoginFormValues,
+    { setSubmitting, setFieldError }: any
+  ) => {
     console.log("Login attempt:", values);
-    // Handle login logic here
+
+    // Check hardcoded credentials
+    if (
+      values.username === TEST_USERNAME &&
+      values.password === TEST_PASSWORD
+    ) {
+      console.log("Login successful! Redirecting to dashboard...");
+      // Store login state in localStorage for persistence
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem(
+        "user",
+        JSON.stringify({ username: values.username })
+      );
+
+      // Redirect to dashboard
+      navigate("/dashboard");
+    } else {
+      console.log("Login failed: Invalid credentials");
+      setFieldError("password", "Invalid username or password");
+    }
+
     setSubmitting(false);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center ">
+    <div className="min-h-screen flex items-center justify-center py-8">
       <div className="w-full md:w-[384px] md:border md:border-light-gray px-6 pb-6 rounded-lg">
         <div className="text-center flex justify-center p-6">
           <img className="w-auto" src="/logo.svg" alt="Logo" />

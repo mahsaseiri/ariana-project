@@ -6,6 +6,7 @@ interface InputProps {
   placeholder?: string;
   value: string;
   onChange: (value: string) => void;
+  onBlur?: () => void;
   error?: string;
   required?: boolean;
   disabled?: boolean;
@@ -19,6 +20,7 @@ const Input: React.FC<InputProps> = ({
   placeholder,
   value,
   onChange,
+  onBlur,
   error,
   required = false,
   disabled = false,
@@ -41,7 +43,7 @@ const Input: React.FC<InputProps> = ({
     disabled:bg-gray-100 
     disabled:cursor-not-allowed
     placeholder:text-muted-foreground
-    placeholder:font-regular
+    placeholder:font-normal
     placeholder:text-sm
   `;
 
@@ -73,6 +75,7 @@ const Input: React.FC<InputProps> = ({
         placeholder={placeholder}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
         disabled={disabled}
         className={inputStyles}
         required={required}

@@ -8,13 +8,13 @@ export const LoginSchema = Yup.object().shape({
 
 // Register validation schema
 export const RegisterSchema = Yup.object().shape({
-  firstName: Yup.string()
+  first_name: Yup.string()
     .trim()
     .min(2, "First name must be at least 2 characters")
     .max(50, "First name must be less than 50 characters")
     .matches(/^[a-zA-Z\s]+$/, "First name can only contain letters and spaces")
     .required("First name is required"),
-  lastName: Yup.string()
+  last_name: Yup.string()
     .trim()
     .min(2, "Last name must be at least 2 characters")
     .max(50, "Last name must be less than 50 characters")
@@ -45,10 +45,10 @@ export const RegisterSchema = Yup.object().shape({
       "Password must contain at least one special character (@$!%*?&)"
     )
     .required("Password is required"),
-  confirmPassword: Yup.string()
+  confirm_password: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Please confirm your password"),
-  image: Yup.mixed()
+  avatar: Yup.mixed()
     .nullable()
     .test("fileType", "Please select an image file", (value) => {
       if (!value) return true; // Allow empty/null values (not required)

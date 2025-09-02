@@ -3,13 +3,15 @@ import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import LogoutModal from "../components/LogoutModal";
 import { logoutIcon, UserIcon } from "../icons";
+import { useDispatch } from "react-redux";
+import { logout } from "../store/slices/authSlice";
+import { useUser } from "../hooks/queries";
 
 const Dashboard = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
-
-  // Get user info from localStorage
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const { data: user } = useUser();
 
   const handleLogoutClick = () => {
     setIsLogoutModalOpen(true);
@@ -17,8 +19,7 @@ const Dashboard = () => {
 
   const handleLogoutConfirm = () => {
     // Clear login state
-    localStorage.removeItem("isLoggedIn");
-    localStorage.removeItem("user");
+    dispatch(logout());
 
     // Close modal and redirect to login
     setIsLogoutModalOpen(false);
@@ -34,10 +35,15 @@ const Dashboard = () => {
       <div className="shrink-0  w-[240px] h-screen flex flex-col justify-between bg-lightest-gray border-r border-sidebar-border py-6 px-2 ">
         <div className="flex flex-col items-center gap-2">
           <div className="rounded-full w-12 h-12 bg-muted flex items-center justify-center overflow-hidden">
-            <img src={UserIcon} alt="User" />
+            <img
+              src={user?.data.avatar ? user?.data.avatar : UserIcon}
+              alt="User"
+            />
           </div>
-          <p className="text-base font-medium text-black">Shahab Hosseini </p>
-          <p className="text-basse text-dark-gray ">{user.username}</p>
+          <p className="text-base font-medium text-black">
+            {user?.data.first_name} {user?.data.last_name}{" "}
+          </p>
+          <p className="text-basse text-dark-gray ">{user?.data.username}</p>
         </div>
         <Button
           name="Logout"
@@ -59,7 +65,6 @@ const Dashboard = () => {
         isOpen={isLogoutModalOpen}
         onClose={handleLogoutCancel}
         onConfirm={handleLogoutConfirm}
-        userName={user.username}
       />
     </div>
   );

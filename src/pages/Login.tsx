@@ -1,50 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { LoginSchema } from "../validations/auth";
 import { LoginFormValues } from "../types/auth";
+import { useLogin } from "../hooks/queries";
+import { login } from "../store/slices/authSlice";
 import Input from "../components/Input";
 import Button from "../components/Button";
 
 const Login = () => {
   const navigate = useNavigate();
-
-  // Hardcoded credentials for testing
-  const TEST_USERNAME = "admin";
-  const TEST_PASSWORD = "password123";
+  const dispatch = useDispatch();
+  const [error, setError] = useState<string | null>(null);
+  const loginMutation = useLogin();
 
   const initialValues: LoginFormValues = {
     username: "",
     password: "",
   };
 
-  const handleSubmit = (
+  const handleSubmit = async (
     values: LoginFormValues,
     { setSubmitting, setFieldError }: any
   ) => {
-    console.log("Login attempt:", values);
+    setError(null);
 
-    // Check hardcoded credentials
-    if (
-      values.username === TEST_USERNAME &&
-      values.password === TEST_PASSWORD
-    ) {
-      console.log("Login successful! Redirecting to dashboard...");
-      // Store login state in localStorage for persistence
-      localStorage.setItem("isLoggedIn", "true");
-      localStorage.setItem(
-        "user",
-        JSON.stringify({ username: values.username })
-      );
+    try {
+      // Use the useLogin hook to login
+      const response = await loginMutation.mutateAsync(values);
+
+      // Store login state in Redux
+      dispatch(login({ token: response.data.token || null }));
 
       // Redirect to dashboard
       navigate("/dashboard");
-    } else {
-      console.log("Login failed: Invalid credentials");
-      setFieldError("password", "Invalid username or password");
+    } catch (error: any) {
+      setError("Invalid username or password");
+    } finally {
+      setSubmitting(false);
     }
-
-    setSubmitting(false);
   };
 
   return (
@@ -96,7 +91,11 @@ const Login = () => {
                   required
                 />
               </div>
-
+              {error && (
+                <p className="text-sm text-destructive font-medium text-center mt-4">
+                  {error}
+                </p>
+              )}
               <Button
                 name="Login"
                 type="submit"

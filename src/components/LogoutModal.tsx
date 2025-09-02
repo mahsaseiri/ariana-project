@@ -14,7 +14,6 @@ const LogoutModal: React.FC<LogoutModalProps> = ({
   isOpen,
   onClose,
   onConfirm,
-  userName = "User",
 }) => {
   // Handle escape key press
   useEffect(() => {

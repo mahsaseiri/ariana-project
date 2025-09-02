@@ -1,23 +1,30 @@
 import React, { useState, useRef } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RegisterSchema } from "../validations/auth";
 import { RegisterFormValues } from "../types/auth";
 import Input from "../components/Input";
 import Button from "../components/Button";
 import { plusIcon, UserIcon } from "../icons";
+import { useRegister } from "../hooks/queries";
+import { useDispatch } from "react-redux";
+import { login } from "../store/slices/authSlice";
 
 const Register = () => {
+  const dispatch = useDispatch();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
+  const registerMutation = useRegister();
 
   const initialValues: RegisterFormValues = {
-    firstName: "",
-    lastName: "",
+    first_name: "",
+    last_name: "",
     username: "",
     password: "",
-    confirmPassword: "",
-    image: null,
+    confirm_password: "",
+    avatar: null,
   };
 
   const handleImageUpload = (
@@ -28,14 +35,14 @@ const Register = () => {
     const file = event.target.files?.[0];
     if (file) {
       // Clear any previous errors
-      setFieldError("image", undefined);
+      setFieldError("avatar", undefined);
 
       // Create a preview URL for the selected image
       const imageUrl = URL.createObjectURL(file);
       setSelectedImage(imageUrl);
 
       // Store the file in Formik
-      setFieldValue("image", file);
+      setFieldValue("avatar", file);
     }
   };
 
@@ -43,10 +50,40 @@ const Register = () => {
     fileInputRef.current?.click();
   };
 
-  const handleSubmit = (values: RegisterFormValues, { setSubmitting }: any) => {
-    console.log("Register attempt:", values);
-    // Handle register logic here
-    setSubmitting(false);
+  const handleSubmit = async (
+    values: RegisterFormValues,
+    { setSubmitting, setFieldError }: any
+  ) => {
+    try {
+      // Create FormData object
+      const formData = new FormData();
+      formData.append("first_name", values.first_name);
+      formData.append("last_name", values.last_name);
+      formData.append("username", values.username);
+      formData.append("password", values.password);
+      formData.append("confirm_password", values.confirm_password);
+
+      // Append avatar file if selected
+      if (values.avatar) {
+        formData.append("avatar", values.avatar);
+      }
+
+      // Call the register mutation
+      const response = await registerMutation.mutateAsync(formData);
+      dispatch(login({ token: response.data.token || null }));
+      // Navigate to login page on success
+      navigate("/dashboard");
+    } catch (error: any) {
+      if (error?.response?.data?.non_field_errors) {
+        setFieldError("username", error?.response?.data?.non_field_errors[0]);
+      } else {
+        setError("Registration failed. Please try again.");
+      }
+
+      // Handle error (you might want to show a toast notification here)
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -79,13 +116,14 @@ const Register = () => {
             handleChange,
             handleBlur,
           }) => {
-            // Check if all required fields are filled
+            // Check if all required fields are filled and no validation errors
             const isFormValid =
-              values.firstName.trim() !== "" &&
-              values.lastName.trim() !== "" &&
+              values.first_name.trim() !== "" &&
+              values.last_name.trim() !== "" &&
               values.username.trim() !== "" &&
               values.password.trim() !== "" &&
-              values.confirmPassword.trim() !== "";
+              values.confirm_password.trim() !== "" &&
+              Object.keys(errors).length === 0;
 
             return (
               <Form className="" noValidate>
@@ -93,7 +131,7 @@ const Register = () => {
                   <div>
                     <div className="w-full border border-light-gray py-[10px] px-3 rounded-md flex items-center justify-between">
                       <div className="rounded-full w-12 h-12 bg-muted flex items-center justify-center overflow-hidden">
-                        {selectedImage && !errors.image ? (
+                        {selectedImage && !errors.avatar ? (
                           <img
                             src={selectedImage}
                             alt="User"
@@ -120,26 +158,28 @@ const Register = () => {
                         onClick={handleUploadClick}
                       />
                     </div>
-                    {errors.image && (
+                    {errors.avatar && (
                       <p className="text-destructive font-medium text-sm mt-2">
-                        {errors.image}
+                        {errors.avatar}
                       </p>
                     )}
                   </div>
                   <Input
                     label="First Name"
                     type="text"
-                    name="firstName"
-                    value={values.firstName}
+                    name="first_name"
+                    value={values.first_name}
                     onChange={(value) => {
-                      setFieldValue("firstName", value);
-                      handleChange({ target: { name: "firstName", value } });
+                      setFieldValue("first_name", value);
+                      handleChange({ target: { name: "first_name", value } });
                     }}
-                    onBlur={() => handleBlur({ target: { name: "firstName" } })}
+                    onBlur={() =>
+                      handleBlur({ target: { name: "first_name" } })
+                    }
                     placeholder="Please enter your first name"
                     error={
-                      touched.firstName && errors.firstName
-                        ? errors.firstName
+                      touched.first_name && errors.first_name
+                        ? errors.first_name
                         : ""
                     }
                     required
@@ -148,16 +188,18 @@ const Register = () => {
                   <Input
                     label="Last Name"
                     type="text"
-                    name="lastName"
-                    value={values.lastName}
+                    name="last_name"
+                    value={values.last_name}
                     onChange={(value) => {
-                      setFieldValue("lastName", value);
-                      handleChange({ target: { name: "lastName", value } });
+                      setFieldValue("last_name", value);
+                      handleChange({ target: { name: "last_name", value } });
                     }}
-                    onBlur={() => handleBlur({ target: { name: "lastName" } })}
+                    onBlur={() => handleBlur({ target: { name: "last_name" } })}
                     placeholder="Please enter your last name"
                     error={
-                      touched.lastName && errors.lastName ? errors.lastName : ""
+                      touched.last_name && errors.last_name
+                        ? errors.last_name
+                        : ""
                     }
                     required
                   />
@@ -199,32 +241,40 @@ const Register = () => {
                   <Input
                     label="Confirm Password"
                     type="password"
-                    name="confirmPassword"
-                    value={values.confirmPassword}
+                    name="confirm_password"
+                    value={values.confirm_password}
                     onChange={(value) => {
-                      setFieldValue("confirmPassword", value);
+                      setFieldValue("confirm_password", value);
                       handleChange({
-                        target: { name: "confirmPassword", value },
+                        target: { name: "confirm_password", value },
                       });
                     }}
                     onBlur={() =>
-                      handleBlur({ target: { name: "confirmPassword" } })
+                      handleBlur({ target: { name: "confirm_password" } })
                     }
                     placeholder="Please re-enter your password"
                     error={
-                      touched.confirmPassword && errors.confirmPassword
-                        ? errors.confirmPassword
+                      touched.confirm_password && errors.confirm_password
+                        ? errors.confirm_password
                         : ""
                     }
                     required
                   />
                 </div>
-
+                {error && (
+                  <div className="text-center text-sm text-red-600 mt-4">
+                    <p className="">Registration failed. Please try again.</p>
+                  </div>
+                )}
                 <Button
-                  name="Register"
+                  name={
+                    registerMutation.isPending ? "Registering..." : "Register"
+                  }
                   type="submit"
                   className="w-full mt-6"
-                  disabled={isSubmitting || !isFormValid}
+                  disabled={
+                    isSubmitting || !isFormValid || registerMutation.isPending
+                  }
                 />
               </Form>
             );

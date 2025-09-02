@@ -5,10 +5,10 @@ export interface LoginFormValues {
 }
 
 export interface RegisterFormValues {
-  firstName: string;
-  lastName: string;
+  first_name: string;
+  last_name: string;
   username: string;
   password: string;
-  confirmPassword: string;
-  image?: File | null;
+  confirm_password: string;
+  avatar?: File | null;
 }

@@ -2,31 +2,41 @@ import * as Yup from "yup";
 
 // Login validation schema
 export const LoginSchema = Yup.object().shape({
-  username: Yup.string().trim().required("Username is required"),
-  password: Yup.string().required("Password is required"),
+  username: Yup.string()
+    .trim()
+    .required("Username is required")
+    .min(1, "Username must be at least 1 character")
+    .max(150, "Username must be 150 characters or fewer")
+    .matches(
+      /^[a-zA-Z0-9@./+\-_]+$/,
+      "Username can only contain letters, digits and @/./+/-/_ only"
+    ),
+  password: Yup.string()
+    .required("Password is required")
+    .min(1, "Password must be at least 1 character"),
 });
 
 // Register validation schema
 export const RegisterSchema = Yup.object().shape({
   first_name: Yup.string()
     .trim()
-    .min(2, "First name must be at least 2 characters")
-    .max(50, "First name must be less than 50 characters")
+    .min(1, "First name must be at least 1 character")
+    .max(150, "First name must be less than 150 characters")
     .matches(/^[a-zA-Z\s]+$/, "First name can only contain letters and spaces")
     .required("First name is required"),
   last_name: Yup.string()
     .trim()
-    .min(2, "Last name must be at least 2 characters")
-    .max(50, "Last name must be less than 50 characters")
+    .min(1, "Last name must be at least 2 character")
+    .max(150, "Last name must be less than 150 characters")
     .matches(/^[a-zA-Z\s]+$/, "Last name can only contain letters and spaces")
     .required("Last name is required"),
   username: Yup.string()
     .trim()
-    .min(3, "Username must be at least 3 characters")
-    .max(20, "Username must be less than 20 characters")
+    .min(1, "Username must be at least 1 character")
+    .max(150, "Username must be 150 characters or fewer")
     .matches(
-      /^[a-zA-Z0-9_]+$/,
-      "Username can only contain letters, numbers, and underscores"
+      /^[a-zA-Z0-9@./+\-_]+$/,
+      "Username can only contain letters, digits and @/./+/-/_ only"
     )
     .required("Username is required"),
   password: Yup.string()

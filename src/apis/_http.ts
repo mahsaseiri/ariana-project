@@ -9,7 +9,9 @@ const _http = axios.create({
 _http.interceptors.request.use(
   function (config) {
     const token = store.getState()?.auth?.token;
-    config.headers.Authorization = `Token ${token ?? ""}`;
+    if (token) {
+      config.headers.Authorization = `Token ${token}`;
+    }
 
     return config;
   },

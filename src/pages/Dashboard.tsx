@@ -33,7 +33,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex">
-      <div className="shrink-0  w-[240px] h-screen flex flex-col justify-between bg-lightest-gray border-r border-sidebar-border py-6 px-2 ">
+      <div className="fixed left-0 top-0 w-[240px] h-screen flex flex-col justify-between bg-lightest-gray border-r border-sidebar-border py-6 px-2 overflow-y-auto">
         <div className="flex flex-col items-center gap-2">
           <div className="rounded-full w-12 h-12 bg-muted flex items-center justify-center overflow-hidden">
             <img
@@ -53,11 +53,13 @@ const Dashboard = () => {
           leftIcon={<img src={logoutIcon} alt="logout" />}
         />
       </div>
-      <div className="w-full h-screen bg-white flex flex-col">
-        <div className="shrink-0 h-[54px] bg-lightest-gray flex items-center p-4">
+      <div className="w-full h-screen bg-white flex flex-col ml-[240px]">
+        <div className="fixed top-0 left-[240px] right-0 h-[54px] bg-lightest-gray flex items-center p-4 z-10">
           <img src="/logo.svg" alt="logo" className="w-[118px] h-[30px]" />
         </div>
-        <TweetContent />
+        <div className="pt-[54px]">
+          <TweetContent />
+        </div>
         {/* <div className="flex items-center justify-center flex-1 ">
           <img src="/empty.png" alt="" className="" />
         </div> */}

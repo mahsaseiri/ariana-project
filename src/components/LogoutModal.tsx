@@ -35,12 +35,7 @@ const LogoutModal: React.FC<LogoutModalProps> = ({
     };
   }, [isOpen, onClose]);
 
-  // Handle backdrop click
-  const handleBackdropClick = (event: React.MouseEvent) => {
-    if (event.target === event.currentTarget) {
-      onClose();
-    }
-  };
+
 
   if (!isOpen) return null;
 

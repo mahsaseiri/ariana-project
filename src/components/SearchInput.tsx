@@ -24,59 +24,35 @@ const SearchInput: React.FC<SearchInputProps> = ({
 }) => {
   const hasError = !!error;
 
-  const baseInputStyles = `
-    w-full 
-    pl-10
-    pr-3 
-    py-2
-    border 
-    border-light-gray
-    rounded-md 
-    font-medium 
-    text-sm
-    text-foreground
-    focus:outline-none 
-    disabled:bg-gray-100 
-    disabled:cursor-not-allowed
-    placeholder:text-muted-foreground
-    placeholder:font-normal
-    placeholder:text-sm
-  `;
-
-  const defaultInputStyles = `
-   
-  `;
-
-  const errorInputStyles = `
-    border-destructive
-  `;
-
-  const inputStyles = hasError
-    ? `${baseInputStyles} ${errorInputStyles} ${className}`
-    : `${baseInputStyles} ${defaultInputStyles} ${className}`;
 
   const containerStyles = `
-    relative
     flex
     flex-col
     gap-2
   `;
 
+  const inputContainerStyles = `
+    flex
+    items-center
+    gap-2
+    border
+    border-sidebar-border
+    rounded-lg
+    px-3
+    h-10
+
+  `;
+
   const iconStyles = `
-    absolute
-    left-3
-    top-1/2
-    transform
-    -translate-y-1/2
     w-4
     h-4
     text-muted-foreground
-    pointer-events-none
+    flex-shrink-0
   `;
 
   return (
     <div className={containerStyles}>
-      <div className="relative">
+      <div className={inputContainerStyles}>
         <img src={searchIcon} alt="Search" className={iconStyles} />
         <input
           id={name}
@@ -87,7 +63,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
           onChange={(e) => onChange(e.target.value)}
           onBlur={onBlur}
           disabled={disabled}
-          className={inputStyles}
+          className="flex-1 bg-transparent border-none outline-none font-medium text-sm text-foreground placeholder:text-muted-foreground placeholder:font-normal placeholder:text-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
           onInvalid={(e) => e.preventDefault()}
         />
       </div>

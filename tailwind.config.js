@@ -42,6 +42,7 @@ module.exports = {
         "sidebar-background": "#F8FAFC",
         "sidebar-border": "#E2E8F0",
         "post-card": "#78788014",
+
       },
     },
   },

@@ -11,6 +11,7 @@ interface TextareaProps {
   name?: string;
   rows?: number;
   resize?: "none" | "both" | "horizontal" | "vertical";
+  maxLength?: number;
 }
 
 const Textarea: React.FC<TextareaProps> = ({
@@ -22,10 +23,23 @@ const Textarea: React.FC<TextareaProps> = ({
   disabled = false,
   className = "",
   name,
-  rows = 3,
+  rows = 1,
   resize = "none",
+  maxLength,
 }) => {
   const hasError = !!error;
+
+  // Handle input change with character limit enforcement
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newValue = e.target.value;
+    
+    // If maxLength is specified, enforce it
+    if (maxLength && newValue.length > maxLength) {
+      return; // Don't update if exceeding max length
+    }
+    
+    onChange(newValue);
+  };
 
   const baseTextareaStyles = `
     w-full 
@@ -40,9 +54,10 @@ const Textarea: React.FC<TextareaProps> = ({
     disabled:bg-gray-100 
     disabled:cursor-not-allowed
     placeholder:text-muted-foreground
-    placeholder:font-normal
     placeholder:text-sm
-    resize-${resize}
+    placeholder:font-semibold
+    placeholder:text-[#B6B6B6]
+    resize-none
   `;
 
   const defaultTextareaStyles = `
@@ -71,11 +86,12 @@ const Textarea: React.FC<TextareaProps> = ({
         name={name}
         placeholder={placeholder}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onChange={handleChange}
         onBlur={onBlur}
         disabled={disabled}
         className={textareaStyles}
         rows={rows}
+        maxLength={maxLength}
         onInvalid={(e) => e.preventDefault()}
       />
       {hasError && <p className="text-sm text-red-600 font-medium">{error}</p>}

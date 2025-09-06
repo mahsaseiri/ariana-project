@@ -6,6 +6,7 @@ import { logoutIcon, UserIcon } from "../icons";
 import { useDispatch } from "react-redux";
 import { logout } from "../store/slices/authSlice";
 import { useUser } from "../hooks/queries";
+import TweetContent from "../components/tweet/TweetContent";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -56,9 +57,10 @@ const Dashboard = () => {
         <div className="shrink-0 h-[54px] bg-lightest-gray flex items-center p-4">
           <img src="/logo.svg" alt="logo" className="w-[118px] h-[30px]" />
         </div>
-        <div className="flex items-center justify-center flex-1 ">
+        <TweetContent />
+        {/* <div className="flex items-center justify-center flex-1 ">
           <img src="/empty.png" alt="" className="" />
-        </div>
+        </div> */}
       </div>
 
       <LogoutModal

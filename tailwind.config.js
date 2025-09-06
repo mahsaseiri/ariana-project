@@ -18,6 +18,7 @@ module.exports = {
         md: "6px",
       },
       fontSize: {
+        xs: "12px",
         sm: "14px",
         base: "15px",
         "2xl": "24px",
@@ -40,6 +41,7 @@ module.exports = {
         "lightest-gray": "#F8FAFC",
         "sidebar-background": "#F8FAFC",
         "sidebar-border": "#E2E8F0",
+        "post-card": "#78788014",
       },
     },
   },
